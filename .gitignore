@@ -1,0 +1,4 @@
+data/
+.azureml/
+azureml-logs/
+.ipynb_checkpoints/

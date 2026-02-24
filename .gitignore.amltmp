@@ -1,0 +1,14 @@
+# Ignore data files
+data/
+*.csv
+*.parquet
+
+# Ignore Azure ML logs and temp files
+.azureml/
+azureml-logs/
+outputs/
+.ipynb_checkpoints/
+
+# Ignore Python environment files
+__pycache__/
+.env
