@@ -38,29 +38,10 @@ To defend against novel attacks that lack historical labels, I integrated an **I
 ---
 
 ## 📈 Performance and Model Selection
+<img width="567" height="202" alt="Screenshot 2026-02-27 at 12 59 07" src="https://github.com/user-attachments/assets/1d7f18e2-d329-4c6c-8f5d-35ad8a36febc" />
 
-| Algorithm | Strategy | Recall | Duration | AUPRC |
-| :--- | :--- | :--- | :--- | :--- |
-| **XGBoost** | **SMOTE** | **0.867** | **9s** | **0.871** |
-| Random Forest | SMOTE | 0.826 | 269s | 0.881 |
-| Logistic Regression | SMOTE | 0.918 | 14s | 0.727 |
-
-### ⚖️ Decision Logic: The Business vs. Technical Trade-off
-Selecting the production model required a multi-dimensional evaluation beyond simple accuracy. My decision to **move forward with XGBoost-SMOTE** was based on two primary pillars:
-
-1. The Risk-Adjusted Cost of Error (Business Case)
-- In Fraud Analytics, the "Cost of a Missed Fraud" (False Negative) is significantly higher than the "Cost of a False Alarm" (False Positive).
-
-- The Recall Priority: Missing a fraudulent transaction results in direct financial loss and potential regulatory scrutiny. XGBoost achieved **the highest Recall (0.867)**, successfully identifying **4.1% more fraud than Random Forest**.
-
-- Operational Handling: While Random Forest had higher precision, the lower precision of XGBoost is operationally manageable. In a fintech workflow, these "extra" flags would be routed to a low-friction Step-up Authentication (e.g., SMS/Push notification), protecting the bottom line without permanently blocking legitimate users.
-
-2. Computational Efficiency & Agility (Technical Case)
-- Fraud is an adversarial race. The ability to retrain and deploy models faster than a fraudster can pivot is a massive competitive advantage.
-
-- Training Latency: On Azure ML, XGBoost-SMOTE completed the training cycle in 9 seconds, compared to 269 seconds for Random Forest.
-
-- Agility: This **30x speed improvement** allows for rapid hyperparameter tuning and near-instantaneous model updates. In a production environment like Duffel, this efficiency reduces cloud compute costs and enables a "CI/CD for ML" (MLOps) approach that keeps the defense system ahead of emerging threats.
+### ⚖️ Strategic Model Selection: The "Risk vs. Friction" Narrative
+My selection of XGBoost-SMOTE as the champion model represents a strategic balance between security coverage and operational viability. While Logistic Regression achieved the highest nominal **Recall (0.918)**, its critically **low Precision (0.054)** would result in an unsustainable 18:1 false-positive ratio, causing massive customer friction and overwhelming manual review teams. In contrast, XGBoost delivered the optimal "Golden Ratio": capturing **87.7% of fraud (Recall)** while providing a **7x improvement in Precision** over Logistic Regression. Furthermore, the technical efficiency of the XGBoost architecture on Azure was decisive; it completed the SMOTE-enhanced training in just **8 seconds, a 21x speed** advantage over the Random Forest equivalent (168s). This agility ensures that the model can be retrained and redeployed in minutes to counteract evolving adversarial tactics in real-time.
 
 ---
 
