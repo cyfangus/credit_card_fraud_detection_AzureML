@@ -74,6 +74,13 @@ The implementation of the Isolation Forest as a secondary defense layer successf
 
 ---
 
+## Conclusion: Multi-Layer Security vs. Business Friction
+By implementing a dual-layer detection engine, this project achieved a high-precision state that balances security with customer experience. The Supervised Layer (XGBoost) acts as the primary shield, capturing the majority of known fraud patterns with 88.9% precision. The Unsupervised Layer (Isolation Forest) serves as a critical fail-safe, recovering 16.6% of frauds missed by the primary model—specifically those that exhibited high-entropy outlier behavior.
+
+## Key Outcome: The final architecture allows the business to automate blocks on 80%+ of fraud while virtually eliminating false alarms (only 10 false positives in the test set), directly reducing operational costs associated with manual reviews and customer disputes.
+
+---
+
 ## 🔍 Model Debugging and Interpretability
 
 * **Global Importance:** Identified that features **V17** and **V14** are the primary drivers of risk detection, which I interpret as high-velocity behavioral anomalies.
