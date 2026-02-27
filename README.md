@@ -16,7 +16,7 @@ Standard machine learning models often fail in fraud contexts because they optim
 
 * **Dataset:** 284,807 transactions.
 * **Incident Rate:** 492 fraudulent cases (0.17%).
-* **Objective:** Developing a robust detection mechanism that identifies high-risk signatures without disrupting the frictionless payment experience required by high-growth platforms like **Duffel** or **Spotify**.
+* **Objective:** Developing a robust detection mechanism that identifies high-risk signatures without disrupting the frictionless payment experience required by high-growth platforms.
 
 
 <img width="867" height="570" alt="image" src="https://github.com/user-attachments/assets/1923e780-edc8-4ee2-a3e4-7066314a0388" />
