@@ -16,17 +16,10 @@ Standard machine learning models often fail in fraud contexts because they optim
 
 * **Dataset:** 284,807 transactions.
 * **Incident Rate:** 492 fraudulent cases (0.17%).
-<<<<<<< HEAD
-* **Objective:** Developing a robust detection mechanism that identifies high-risk signatures without disrupting the frictionless payment experience required by high-growth platforms.
-
-
-<img width="867" height="570" alt="image" src="https://github.com/user-attachments/assets/1923e780-edc8-4ee2-a3e4-7066314a0388" />
-=======
 * **Objective:** Developing a robust detection mechanism that identifies high-risk signatures without disrupting the frictionless payment experience required by high-growth platforms like **Duffel** or **Spotify**.
 
 
 <img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/1923e780-edc8-4ee2-a3e4-7066314a0388" />
->>>>>>> 10d3263 (added 2 layer model)
 
 ---
 
@@ -66,11 +59,7 @@ Winning Parameters:
 | learning_rate | 0.1 | Ensured robust convergence during boosting. |
 
 ## Precision-Recall Evolution: A Comparative Analysis
-<<<<<<< HEAD
-<img width="637" height="624" alt="Screenshot 2026-02-27 at 13 47 38" src="https://github.com/user-attachments/assets/22db9bcb-0d48-4bf8-8c0e-bbe09407bf33" />
-=======
 <img width="400" height="400" alt="Screenshot 2026-02-27 at 13 47 38" src="https://github.com/user-attachments/assets/22db9bcb-0d48-4bf8-8c0e-bbe09407bf33" />
->>>>>>> 10d3263 (added 2 layer model)
 
 Before finalizing the operational policy, I analyzed the Precision-Recall (PR) Curve to quantify the impact of oversampling and hyperparameter tuning. Unlike ROC curves, which can be overly optimistic on imbalanced data, the PR curve provides a transparent view of the model's ability to identify rare fraud events while minimizing customer friction. While the Average Precision (AP) slightly adjusted after tuning (dark blue), the curve became more stable. This indicates better generalization and a more reliable "elbow" for selecting operational thresholds.
 
