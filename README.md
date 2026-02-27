@@ -67,7 +67,7 @@ Before finalizing the operational policy, I analyzed the Precision-Recall (PR) C
 <img width="402" height="200" alt="Screenshot 2026-02-27 at 14 00 27" src="https://github.com/user-attachments/assets/a9d6f7e3-e117-4cf9-8a3e-b9693a8d3d7c" />
 Following Hyperparameter Optimization, I conducted a Strategic Threshold Analysis to define the model's operational policy. The tuned XGBoost model demonstrated exceptional calibration, allowing for a Balanced Policy (0.950 threshold) that captures 81.6% of fraud with an 88.9% Precision rate. This configuration effectively minimizes operational overhead by limiting false positives to just 10 cases, representing a highly efficient 'Precision-First' deployment strategy for real-time transaction monitoring.
 
-## Training Isolation Forest as the 2nd layer to catch the fraud cases missed by the 1st layer XGBoost model
+## Adding Isolation Forest as 2nd layer
 <img width="529" height="261" alt="Screenshot 2026-02-27 at 14 17 04" src="https://github.com/user-attachments/assets/7b8293c4-cfd2-4cd8-87ec-697af7ba994c" />
 
 The implementation of the Isolation Forest as a secondary defense layer successfully identified 16.67% (3 out of 18) of the fraud cases missed by the supervised XGBoost model. By specifically targeting transactions with negative anomaly scores ($IF\_Score < 0$), the system identified "Silent Frauds" that had been classified as low-risk by the primary model. This unsupervised layer demonstrated a critical ability to catch novel, "Zero-Day" patterns that do not match historical profiles, most notably isolating a high-priority outlier (Index 9179) that the XGBoost model had assigned a fraud probability of only 6.4%.
