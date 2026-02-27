@@ -49,18 +49,18 @@ To defend against novel attacks that lack historical labels, I integrated an **I
 Selecting the production model required a multi-dimensional evaluation beyond simple accuracy. My decision to **move forward with XGBoost-SMOTE** was based on two primary pillars:
 
 1. The Risk-Adjusted Cost of Error (Business Case)
-In Fraud Analytics, the "Cost of a Missed Fraud" (False Negative) is significantly higher than the "Cost of a False Alarm" (False Positive).
+- In Fraud Analytics, the "Cost of a Missed Fraud" (False Negative) is significantly higher than the "Cost of a False Alarm" (False Positive).
 
-The Recall Priority: Missing a fraudulent transaction results in direct financial loss and potential regulatory scrutiny. XGBoost achieved **the highest Recall (0.867)**, successfully identifying **4.1% more fraud than Random Forest**.
+- The Recall Priority: Missing a fraudulent transaction results in direct financial loss and potential regulatory scrutiny. XGBoost achieved **the highest Recall (0.867)**, successfully identifying **4.1% more fraud than Random Forest**.
 
-Operational Handling: While Random Forest had higher precision, the lower precision of XGBoost is operationally manageable. In a fintech workflow, these "extra" flags would be routed to a low-friction Step-up Authentication (e.g., SMS/Push notification), protecting the bottom line without permanently blocking legitimate users.
+- Operational Handling: While Random Forest had higher precision, the lower precision of XGBoost is operationally manageable. In a fintech workflow, these "extra" flags would be routed to a low-friction Step-up Authentication (e.g., SMS/Push notification), protecting the bottom line without permanently blocking legitimate users.
 
 2. Computational Efficiency & Agility (Technical Case)
-Fraud is an adversarial race. The ability to retrain and deploy models faster than a fraudster can pivot is a massive competitive advantage.
+- Fraud is an adversarial race. The ability to retrain and deploy models faster than a fraudster can pivot is a massive competitive advantage.
 
-Training Latency: On Azure ML, XGBoost-SMOTE completed the training cycle in 9 seconds, compared to 269 seconds for Random Forest.
+- Training Latency: On Azure ML, XGBoost-SMOTE completed the training cycle in 9 seconds, compared to 269 seconds for Random Forest.
 
-Agility: This **30x speed improvement** allows for rapid hyperparameter tuning and near-instantaneous model updates. In a production environment like Duffel, this efficiency reduces cloud compute costs and enables a "CI/CD for ML" (MLOps) approach that keeps the defense system ahead of emerging threats.
+- Agility: This **30x speed improvement** allows for rapid hyperparameter tuning and near-instantaneous model updates. In a production environment like Duffel, this efficiency reduces cloud compute costs and enables a "CI/CD for ML" (MLOps) approach that keeps the defense system ahead of emerging threats.
 
 ---
 
