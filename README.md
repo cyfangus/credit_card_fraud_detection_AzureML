@@ -43,6 +43,14 @@ To defend against novel attacks that lack historical labels, I integrated an **I
 ### ⚖️ Strategic Model Selection: The "Risk vs. Friction" Narrative
 My selection of XGBoost-SMOTE as the champion model represents a strategic balance between security coverage and operational viability. While Logistic Regression achieved the highest nominal **Recall (0.918)**, its critically **low Precision (0.054)** would result in an unsustainable 18:1 false-positive ratio, causing massive customer friction and overwhelming manual review teams. In contrast, XGBoost delivered the optimal "Golden Ratio": capturing **87.7% of fraud (Recall)** while providing a **7x improvement in Precision** over Logistic Regression. Furthermore, the technical efficiency of the XGBoost architecture on Azure was decisive; it completed the SMOTE-enhanced training in just **8 seconds, a 21x speed** advantage over the Random Forest equivalent (168s). This agility ensures that the model can be retrained and redeployed in minutes to counteract evolving adversarial tactics in real-time.
 
+## PR Curve (SMOTE vs Imbalanced Data Strategy)
+<img width="615" height="624" alt="image" src="https://github.com/user-attachments/assets/f62cf154-53c6-47e0-b502-7937ac5a449d" />
+This PR Curve demonstrates that the SMOTE-enhanced XGBoost (Orange) significantly outperforms the baseline (Blue), achieving a 0.87 Average Precision. The curve remains "high and right," proving that the model can maintain operational precision (~37%) even when pushed to high-recall security requirements (>85%), effectively minimizing the trade-off between fraud detection and customer friction.
+
+## Threshold tuning
+<img width="374" height="149" alt="Screenshot 2026-02-27 at 13 22 04" src="https://github.com/user-attachments/assets/99f2a24b-af5c-4f4d-9a40-30d9845ae41b" />
+Operational Excellence through Threshold Tuning: > While the baseline model (0.5 threshold) yielded a high recall, its 5.5% precision rendered it operationally non-viable due to extreme customer friction. By implementing a Balanced Policy (Threshold: 0.9960), I was able to maintain a high security posture (86.7% Recall) while increasing Precision to 61.6%. This optimization effectively reduces false positives by 91% compared to the baseline, directly translating to hundreds of saved hours for manual review teams and a seamless experience for legitimate users.
+
 ---
 
 ## 🔍 Model Debugging and Interpretability
