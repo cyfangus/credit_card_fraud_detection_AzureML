@@ -60,6 +60,7 @@ Winning Parameters:
 
 ## Precision-Recall Evolution: A Comparative Analysis
 <img width="637" height="624" alt="Screenshot 2026-02-27 at 13 47 38" src="https://github.com/user-attachments/assets/22db9bcb-0d48-4bf8-8c0e-bbe09407bf33" />
+
 Before finalizing the operational policy, I analyzed the Precision-Recall (PR) Curve to quantify the impact of oversampling and hyperparameter tuning. Unlike ROC curves, which can be overly optimistic on imbalanced data, the PR curve provides a transparent view of the model's ability to identify rare fraud events while minimizing customer friction. While the Average Precision (AP) slightly adjusted after tuning (dark blue), the curve became more stable. This indicates better generalization and a more reliable "elbow" for selecting operational thresholds.
 
 ## Threshold tuning
