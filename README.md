@@ -43,13 +43,28 @@ To defend against novel attacks that lack historical labels, I integrated an **I
 ### ⚖️ Strategic Model Selection: The "Risk vs. Friction" Narrative
 My selection of XGBoost-SMOTE as the champion model represents a strategic balance between security coverage and operational viability. While Logistic Regression achieved the highest nominal **Recall (0.918)**, its critically **low Precision (0.054)** would result in an unsustainable 18:1 false-positive ratio, causing massive customer friction and overwhelming manual review teams. In contrast, XGBoost delivered the optimal "Golden Ratio": capturing **87.7% of fraud (Recall)** while providing a **7x improvement in Precision** over Logistic Regression. Furthermore, the technical efficiency of the XGBoost architecture on Azure was decisive; it completed the SMOTE-enhanced training in just **8 seconds, a 21x speed** advantage over the Random Forest equivalent (168s). This agility ensures that the model can be retrained and redeployed in minutes to counteract evolving adversarial tactics in real-time.
 
-## PR Curve (SMOTE vs Imbalanced Data Strategy)
-<img width="615" height="624" alt="image" src="https://github.com/user-attachments/assets/f62cf154-53c6-47e0-b502-7937ac5a449d" />
-This PR Curve demonstrates that the SMOTE-enhanced XGBoost (Orange) significantly outperforms the baseline (Blue), achieving a 0.87 Average Precision. The curve remains "high and right," proving that the model can maintain operational precision (~37%) even when pushed to high-recall security requirements (>85%), effectively minimizing the trade-off between fraud detection and customer friction.
+## 🔬 Model Optimization & Refinement
+To maximize the model's discriminative power, I conducted Hyperparameter Optimization using RandomizedSearchCV with 3-fold Cross-Validation.
+
+### The Strategy:
+- Target Metric: Optimized for AUPRC (Average Precision) rather than accuracy to prioritize the Precision-Recall trade-off essential for fraud detection.
+- Regularization: Focused on reg_lambda (L2) and reg_alpha (L1) to prevent the model from overfitting to synthetic SMOTE artifacts.
+- Efficiency: Utilized a 10-iteration search to identify a high-performing configuration while maintaining computational efficiency.
+
+Winning Parameters:
+| Parameter | Value | Impact |
+| :--- | :--- | :--- |
+| max_depth | 6 | Balanced model complexity with generalization. |
+| reg_lambda | 5 | Applied strong L2 penalty to stabilize weights. |
+| learning_rate | 0.1 | Ensured robust convergence during boosting. |
+
+## Precision-Recall Evolution: A Comparative Analysis
+<img width="637" height="624" alt="Screenshot 2026-02-27 at 13 47 38" src="https://github.com/user-attachments/assets/22db9bcb-0d48-4bf8-8c0e-bbe09407bf33" />
+Before finalizing the operational policy, I analyzed the Precision-Recall (PR) Curve to quantify the impact of oversampling and hyperparameter tuning. Unlike ROC curves, which can be overly optimistic on imbalanced data, the PR curve provides a transparent view of the model's ability to identify rare fraud events while minimizing customer friction. While the Average Precision (AP) slightly adjusted after tuning (dark blue), the curve became more stable. This indicates better generalization and a more reliable "elbow" for selecting operational thresholds.
 
 ## Threshold tuning
-<img width="374" height="149" alt="Screenshot 2026-02-27 at 13 22 04" src="https://github.com/user-attachments/assets/99f2a24b-af5c-4f4d-9a40-30d9845ae41b" />
-Operational Excellence through Threshold Tuning: > While the baseline model (0.5 threshold) yielded a high recall, its 5.5% precision rendered it operationally non-viable due to extreme customer friction. By implementing a Balanced Policy (Threshold: 0.9960), I was able to maintain a high security posture (86.7% Recall) while increasing Precision to 61.6%. This optimization effectively reduces false positives by 91% compared to the baseline, directly translating to hundreds of saved hours for manual review teams and a seamless experience for legitimate users.
+<img width="402" height="200" alt="Screenshot 2026-02-27 at 14 00 27" src="https://github.com/user-attachments/assets/a9d6f7e3-e117-4cf9-8a3e-b9693a8d3d7c" />
+Following Hyperparameter Optimization, I conducted a Strategic Threshold Analysis to define the model's operational policy. The tuned XGBoost model demonstrated exceptional calibration, allowing for a Balanced Policy (0.950 threshold) that captures 81.6% of fraud with an 88.9% Precision rate. This configuration effectively minimizes operational overhead by limiting false positives to just 10 cases, representing a highly efficient 'Precision-First' deployment strategy for real-time transaction monitoring.
 
 ---
 
