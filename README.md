@@ -162,7 +162,7 @@ Building this system provided deep insights into the nuances of **Financial Data
 To further evolve this "Enterprise Defense Engine," future iterations will focus on:
 1. **Real-time Drift Monitoring:** Implementing Azure ML monitors to detect "Feature Drift" in real-time, specifically for high-importance features like **V14**, to trigger automatic retraining.
 2. **Active Learning Loop:** Developing a feedback pipeline where "Layer 2" (Isolation Forest) flags are sent to human investigators; their labels then flow back into the training set for "Layer 1" to improve supervised performance over time.
-3. **Graph Neural Networks (GNNs):** Exploring the relationship between different merchant IDs and cards to identify fraudulent "rings" or clusters that go beyond individual transaction signatures.
+3. **Graph Neural Networks (GNNs):** Exploring the relationship between different merchant IDs and cards (features which this dataset does not contain) in real life scenarios to identify fraudulent "rings" or clusters that go beyond individual transaction signatures.
 
 ---
 **This project stands as a testament to building AI that is technically sophisticated, operationally efficient, and strictly business-aligned.**
