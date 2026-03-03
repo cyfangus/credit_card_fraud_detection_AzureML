@@ -12,10 +12,15 @@
 
 ---
 
-## 🎯 Business Value Proposition
-In modern payment processing, **False Positives** are as expensive as fraud itself. Blocking a legitimate customer during a purchase results in immediate revenue loss, support overhead, and long-term churn. 
+## 🏦 Business Context: Fraud Prevention in Digital Banking
+In a financial service and retail banking environment, the goal of fraud detection is to balance **loss prevention** with **customer experience**. A high-performing model must not only catch fraudulent transactions but also minimize "False Positives" that frustrate legitimate customers.
 
-This project delivers a **Frictionless Fraud Engine** that achieves a **77.5% Precision rate**—ensuring that when the system flags a transaction, it is highly likely to be fraudulent, thereby protecting the user experience while maintaining elite security standards.
+**Key Objectives for this Project:**
+- **Maximize Detection:** Identify high-risk transactions in real-time.
+- **Operational Efficiency:** Prioritize the most suspicious cases for manual review.
+- **Scalability:** Leverage Azure ML for a cloud-native, production-ready pipeline.
+
+This project delivers a **effective detection system** that flags **84.6% (recall)** of fraud transactions while protecting the user expereince by maintaining a **77.5% Precision**.
 
 ---
 
@@ -53,11 +58,11 @@ To defend against "Cold Start" fraud—novel attacks that lack historical labels
 
 ### 🏆 Results: The Model Tournament
 
-| Candidate Algorithm | Strategy | AUPRC (Gold Standard) | Precision (User Friction) | Recall (Detection Rate) |
-| :--- | :--- | :--- | :--- | :--- |
-| **🏆 XGBoost** | **Cost-Sensitive** | **0.861** | **0.775** | **0.846** |
-| Random Forest | Balanced Weights | 0.828 | 0.778 | 0.826 |
-| Logistic Regression | Balanced Weights | 0.723 | 0.055 | 0.918 |
+| Candidate Algorithm | Strategy | AUPRC (Gold Standard) | Precision (False Positive Ratio/ User Friction) | Recall (Detection Rate) | F-1 score |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **🏆 XGBoost** | **Cost-Sensitive** | **0.861** | **0.775** | **0.846** | **0.810** |	
+| Random Forest | Balanced Weights | 0.828 | 0.778 | 0.826 | 0.802 |
+| Logistic Regression | Balanced Weights | 0.723 | 0.055 | 0.918 | 0.104|
 
 #### Strategic Selection: 
 The Champion Model LogicSelecting the final model wasn't just about picking the highest number; it was about balancing Security (Recall) with Customer Experience (Precision).
@@ -150,22 +155,20 @@ The entire **Hybrid Defense Model** (XGBoost + Isolation Forest) has been formal
 
 ---
 
-### 🧠 Reflections
-Building this system provided deep insights into the nuances of **Financial Data Science**:
-* **Precision is Paramount:** In Fintech, a high Recall is easy to achieve, but high Precision is where the business value lies. This project reinforced the importance of optimizing for the business bottom line (reducing False Positives) rather than just chasing high accuracy scores.
-* **Hybrid Utility:** Supervised models are powerful but reactive. Integrating an unsupervised layer (Isolation Forest) proved that a "Safety Net" is essential for identifying the $26\%$ of "Silent Frauds" that traditional pattern matching would otherwise miss.
-* **MLOps Discipline:** Using Azure ML and MLflow transformed the project from a "notebook script" into an "engineering asset," highlighting how crucial experiment tracking is for reproducible and scalable AI.
+## 🚀 Strategic Roadmap: From PoC to Production
+This project could serve as a Proof of Concept (PoC). In a real-world banking environment, I would enhance this framework with the following strategic initiatives:
 
----
+### Phase 1: Advanced Metrics Integration
+- **Value Detection Rate (VDR):** Transition from "Count-based" detection to "Value-based" detection—prioritizing the prevention of high-monetary loss transactions.
+- **Precision@K:** Optimize the model to provide a "Top-K" list for the manual investigation team, ensuring 100% utilization of operational capacity on the highest-risk alerts.
 
-### 🔮 What's Next?
-To further evolve this "Enterprise Defense Engine," future iterations will focus on:
-1. **Real-time Drift Monitoring:** Implementing Azure ML monitors to detect "Feature Drift" in real-time, specifically for high-importance features like **V14**, to trigger automatic retraining.
-2. **Active Learning Loop:** Developing a feedback pipeline where "Layer 2" (Isolation Forest) flags are sent to human investigators; their labels then flow back into the training set for "Layer 1" to improve supervised performance over time.
-3. **Graph Neural Networks (GNNs):** Exploring the relationship between different merchant IDs and cards (features which this dataset does not contain) in real life scenarios to identify fraudulent "rings" or clusters that go beyond individual transaction signatures.
+### Phase 2: Model Explainability & Compliance
+- **XAI (SHAP/LIME):** Implement explainability layers to satisfy regulatory requirements (FCA Consumer Duty) by providing clear "Reason Codes" for every blocked transaction.
+- **Fairness Monitoring:** Auditing the model for demographic bias to ensure equitable treatment across the customer base.
 
----
-**This project stands as a testament to building AI that is technically sophisticated, operationally efficient, and strictly business-aligned.**
+### Phase 3: Real-Time Resilience
+- **Drift Detection:** Implement Population Stability Index (PSI) monitoring to detect when fraudster tactics change (Model Drift).
+- **Behavioral Features:** Based on insights from other fraud team mmembers, incorporate behavioral features such as velocity-based features (e.g., "number of transactions in the last hour") to capture modern attack vectors like APP Scams.
 
 ---
 
