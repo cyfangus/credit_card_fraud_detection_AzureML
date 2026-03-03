@@ -1,4 +1,4 @@
-# 💳 Building a 2-layered Credit Card Fraud Detection Frameowork on AzureML
+# 💳 Building a Hybrid Credit Card Fraud Detection Frameowork on AzureML
 **An MLOps Case Study in Extreme Class Imbalance (0.17%)**
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
