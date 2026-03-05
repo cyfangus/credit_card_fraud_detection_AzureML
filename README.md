@@ -43,16 +43,20 @@ To provide comprehensive coverage, I implemented a dual-layered architectural ap
 ### Layer 1: Supervised Learning (The "Pattern Matcher")
 The primary layer utilizes a supervised framework to map known fraud signatures. I conducted a systematic benchmark of Logistic Regression, Random Forest, and XGBoost to identify the most robust engine for this high-dimensional PCA feature space.
 
-#### The Precision-Recall Optimization: In fraud detection, the goal is rarely "Accuracy." Instead, I focused on the Precision-Recall Trade-off. A model with high Recall but low Precision creates "Customer Friction" by blocking legitimate users. My methodology involved tuning the decision boundary to maximize AUPRC (Area Under Precision-Recall Curve), ensuring the system can catch fraud without compromising the user experience.
+#### The Precision-Recall Optimization: 
+In fraud detection, the goal is rarely "Accuracy." Instead, I focused on the Precision-Recall Trade-off. A model with high Recall but low Precision creates "Customer Friction" by blocking legitimate users. My methodology involved tuning the decision boundary to maximize AUPRC (Area Under Precision-Recall Curve), ensuring the system can catch fraud without compromising the user experience.
 
-#### Operational Efficiency: Beyond predictive power, I evaluated each candidate on Inference Latency. In a production payment gateway, a model must return a verdict in milliseconds. I specifically tested how each algorithm handles Cost-Sensitive Learning (via scale_pos_weight and class_weight) to manage the 0.17% imbalance without the overhead of synthetic data generation.
+#### Operational Efficiency: 
+Beyond predictive power, I evaluated each candidate on Inference Latency. In a production payment gateway, a model must return a verdict in milliseconds. I specifically tested how each algorithm handles Cost-Sensitive Learning (via scale_pos_weight and class_weight) to manage the 0.17% imbalance without the overhead of synthetic data generation.
 
 ### Layer 2: Unsupervised Anomaly Detection (The "Safety Net")
 To defend against "Cold Start" fraud—novel attacks that lack historical labels—I integrated an Isolation Forest layer.
 
-#### Structural Outliers: Unlike supervised models that look for "Fraud like the past," Isolation Forest identifies transactions that are simply "not like the rest" by isolating anomalies in high-dimensional space.
+#### Structural Outliers: 
+Unlike supervised models that look for "Fraud like the past," Isolation Forest identifies transactions that are simply "not like the rest" by isolating anomalies in high-dimensional space.
 
-#### Zero-Day Protection: This layer acts as a heuristic safety net. If a transaction appears structurally anomalous but passes the supervised check, it can be flagged for "Manual Review" or "Step-up Authentication" (MFA) rather than being blindly approved.
+#### Zero-Day Protection: 
+This layer acts as a heuristic safety net. If a transaction appears structurally anomalous but passes the supervised check, it can be flagged for "Manual Review" or "Step-up Authentication" (MFA) rather than being blindly approved.
 
 ---
 
