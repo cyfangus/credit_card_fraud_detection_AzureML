@@ -1,4 +1,4 @@
-# 💳 Building a Hybrid Credit Card Fraud Detection Frameowork on AzureML
+# 💳 Credit Card Fraud Detection: End-to-End Azure MLOps & Explainable AI
 **An MLOps Case Study in Extreme Class Imbalance (0.17%)**
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
@@ -12,15 +12,20 @@
 
 ---
 
+## 📌 Executive Summary
+Fraud detection is a "needle in a haystack" problem. In this project, I developed a high-precision fraud detection engine that identifies 90.8% of fraudulent transactions while only flagging 1% of total transaction volume. By moving from a local notebook to a Managed Azure ML Pipeline, I demonstrated how to build a production-ready system that balances predictive power with financial regulatory transparency (SHAP).
+
+---
+
 ## 🏦 Business Context: Fraud Prevention in Digital Banking
 In a financial service and retail banking environment, the goal of fraud detection is to balance **loss prevention** with **customer experience**. A high-performing model must not only catch fraudulent transactions but also minimize "False Positives" that frustrate legitimate customers.
 
 **Key Objectives for this Project:**
-- **Maximize Detection:** Identify high-risk transactions in real-time.
+- **Maximize Business Value of Detection:** Identify high-risk transactions in real-time to save the most cost for the company.
 - **Operational Efficiency:** Prioritize the most suspicious cases for manual review.
 - **Scalability:** Leverage Azure ML for a cloud-native, production-ready pipeline.
 
-This project delivers a **effective detection system** that flags **84.6% (recall)** of fraud transactions while protecting the user expereince by maintaining a **77.5% Precision**.
+This project delivers a **effective detection system** that saved **98% of the value** from fraud transaction while maintaining a **15% precision@k** for operationl efficiency at 1% alert rate. 
 
 ---
 
@@ -36,143 +41,82 @@ Standard machine learning models often fail in fraud contexts because they optim
 
 ---
 
-## 🛠️ Technical Methodology: The Hybrid Defense Strategy
+## 🧠 Hybrid Model Architecture: Anomaly-Informed Supervision
+A unique highlight of this project is the Two-Stage Hybrid Pipeline. Instead of feeding raw data directly into a classifier, I engineered an "Anomaly Signal" to help the models distinguish between subtle patterns and extreme outliers.
 
-To provide comprehensive coverage, I implemented a dual-layered architectural approach. This hybrid strategy addresses both known behavioral signatures (historical patterns) and novel, "zero-day" attack vectors (unseen anomalies).
+### Stage 1: Unsupervised Outlier Detection (Isolation Forest)
+I first deployed an Isolation Forest algorithm on the raw transaction data.
 
-### Layer 1: Supervised Learning (The "Pattern Matcher")
-The primary layer utilizes a supervised framework to map known fraud signatures. I conducted a systematic benchmark of Logistic Regression, Random Forest, and XGBoost to identify the most robust engine for this high-dimensional PCA feature space.
+The Logic: Fraudulent transactions often occupy a sparse region of the feature space.
+The Feature: I extracted the Anomaly Score from the Isolation Forest and appended it as a new, high-value feature to the training set. This provided the supervised models with a "pre-calculated" hint regarding how unusual a transaction is relative to the entire dataset.
 
-#### The Precision-Recall Optimization: 
-In fraud detection, the goal is rarely "Accuracy." Instead, I focused on the Precision-Recall Trade-off. A model with high Recall but low Precision creates "Customer Friction" by blocking legitimate users. My methodology involved tuning the decision boundary to maximize AUPRC (Area Under Precision-Recall Curve), ensuring the system can catch fraud without compromising the user experience.
+### Stage 2: Supervised Benchmarking & Comparison
+With the added anomaly context, I trained and cross-validated three distinct types of supervised learners to find the optimal balance between detection (protecting the bank from loss) and customer friction (maintaining good customer expereince).
 
-#### Operational Efficiency: 
-Beyond predictive power, I evaluated each candidate on Inference Latency. In a production payment gateway, a model must return a verdict in milliseconds. I specifically tested how each algorithm handles Cost-Sensitive Learning (via scale_pos_weight and class_weight) to manage the 0.17% imbalance without the overhead of synthetic data generation.
+<img width="1201" height="347" alt="Screenshot 2026-03-12 at 11 48 07" src="https://github.com/user-attachments/assets/11a77637-ed1b-441f-8024-a42c7ae47ff0" />
+🔍 Key Metric Definitions for Stakeholders:
+VDR (Value Detection Rate): Measures the percentage of the total monetary value of fraud caught. This is often more important to a CFO than the number of cases.
+Hit Rate (Prec@1%): The "True Positive" rate when we only look at the highest-risk 1% of transactions. A higher hit rate means less time wasted for fraud analysts.
+Customer Friction (FPR): At 0.84%, this model ensures that less than 1 in 100 legitimate customers are ever inconvenienced by a false fraud alert.
+Value Efficiency: A ratio of dollars saved versus the cost to catch them. Our top model achieved a 1.08 efficiency rating, proving it is a profit-generating asset.
 
-### Layer 2: Unsupervised Anomaly Detection (The "Safety Net")
-To defend against "Cold Start" fraud—novel attacks that lack historical labels—I integrated an Isolation Forest layer.
-
-#### Structural Outliers: 
-Unlike supervised models that look for "Fraud like the past," Isolation Forest identifies transactions that are simply "not like the rest" by isolating anomalies in high-dimensional space.
-
-#### Zero-Day Protection: 
-This layer acts as a heuristic safety net. If a transaction appears structurally anomalous but passes the supervised check, it can be flagged for "Manual Review" or "Step-up Authentication" (MFA) rather than being blindly approved.
-
----
-
-### 🏆 Results: The Model Tournament
-
-| Candidate Algorithm | Strategy | AUPRC (Gold Standard) | Precision (False Positive Ratio/ User Friction) | Recall (Detection Rate) | F-1 score |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **🏆 XGBoost** | **Cost-Sensitive** | **0.861** | **0.775** | **0.846** | **0.810** |	
-| Random Forest | Balanced Weights | 0.828 | 0.778 | 0.826 | 0.802 |
-| Logistic Regression | Balanced Weights | 0.723 | 0.055 | 0.918 | 0.104|
-
-#### Strategic Selection: 
-The Champion Model LogicSelecting the final model wasn't just about picking the highest number; it was about balancing Security (Recall) with Customer Experience (Precision).
-
-1. Why XGBoost Won the "Gold Standard":
-While all models were tuned for the 0.17% imbalance, XGBoost achieved the highest AUPRC (0.861). AUPRC is our "Gold Standard" because it measures the model’s ability to rank fraud correctly across all possible thresholds. XGBoost's superior gradient boosting architecture allowed it to capture subtle, non-linear fraud signatures that the other models partially missed.
-
-2. The "Logistic Regression Trap" (Recall vs. Precision):
-Looking at the results, Logistic Regression has the highest Recall (0.918)—meaning it caught almost all the fraud. However, its Precision (0.055) is a "Business Failure." If we deployed Logistic Regression, for every 1 actual fraudster caught, we would be blocking nearly 18 legitimate customers. This would overwhelm the support team and cause massive customer churn. I rejected this model because the "cost of friction" outweighed the "benefit of detection."
-
-3. XGBoost vs. Random Forest: The Efficiency Edge
-Random Forest performed admirably, but XGBoost provided a 3.3% lift in AUPRC while maintaining a similarly high Precision (77.5%). In a high-volume payment environment, a 3% improvement in AUPRC translates to thousands of dollars in saved revenue and fewer fraudulent transactions slipping through.
+To determine the most effective model for production, I conducted a benchmarking exercise across three distinct model architectures (XGBoost, Random Forest, and Logistic Regression) and three optimization strategies (Frequency, Raw Value, and Balanced).
+The models were evaluated not just on accuracy, but on Financial Impact and Operational Cost. The **XGBoost model optimized for transaction frequency** emerged as the clear winner for a high-volume banking environment.
 
 ---
 
-## 🔧 Model Optimization: Beyond the Baseline
+## 🔍 Explainable AI (XAI): Deciphering the "Black Box"
+To ensure the model's predictions are actionable for fraud analysts, I implemented SHAP based on cooperative game theory. This allows us to see exactly which features are driving the risk scores.
 
-Once the champion architecture was identified, I transitioned from model selection to **performance optimization** through a two-stage tuning process to ensure the model was production-ready.
-
-### Stage 1: Hyperparameter Tuning (The Search for Generalization)
-Using `RandomizedSearchCV` integrated with **MLflow Autologging**, I explored a high-dimensional parameter space to harden the XGBoost model against overfitting.
-
-* **Regularization (Alpha/Lambda):** Fraud datasets often contain "noise" from atypical but legitimate high-value transactions. I tuned L1 and L2 regularization to ensure the model learned generalizable patterns rather than memorizing specific outlier cases.
-* **Tree Depth & Learning Rate:** By slowing down the learning rate (`0.05`) and limiting `max_depth` to 4-6, I forced the model to build an ensemble of "weak learners." This provides a robust defense that is less fragile to new attack vectors compared to a few overly-complex trees.
+<img width="875" height="568" alt="image" src="https://github.com/user-attachments/assets/283293d2-81c4-47f8-aa17-c9dc342ae365" />
 
 
-### Stage 2: Threshold Tuning (The "Business Logic" Layer)
-Standard machine learning models default to a `0.5` probability threshold. However, in fraud detection, this default is rarely optimal for business goals. I implemented a post-training **Precision-Recall Curve Analysis** to identify the most efficient "Operating Point."
+### Global Interpretability: What Drives Fraud?
+As shown in the SHAP summary plot below, the model has learned highly specific indicators of fraudulent behavior:
+1. Primary Drivers (V14, V4, V12): These anonymized PCA features are the strongest signals. V14 alone contributes an average magnitude of +1.91 to the model's output, indicating it is a critical "red flag" variable.
+2. The Hybrid Advantage (anomaly_score): Our engineered Isolation Forest Anomaly Score ranks as the 4th most important feature (+0.82). This confirms that the unsupervised "outlier" signal significantly aids the supervised XGBoost model in identifying fraud.
+3. Feature Synergy: While individual features like V11 and V16 have smaller impacts, the "Sum of 22 other features" (+2.49) shows that the model is successfully capturing a complex "web" of subtle behaviors rather than relying on a single smoking gun.
 
-* **Optimal Threshold (0.89):** Based on the trade-off analysis, I identified **0.89** as the optimal threshold. As shown in the *Precision vs. Recall at Different Thresholds* plot, this value allows the model to stay within a high-confidence zone where Precision remains elevated ($>80\%$), ensuring that flagged transactions are highly likely to be fraudulent.
-* **Maximizing Reliability:** The Precision-Recall curve (AUPRC) shows a distinct plateau where the model maintains near-perfect Precision up until approximately $70\%$ Recall. By selecting a threshold of **0.89**, the system captures the majority of fraud while aggressively minimizing False Positives and the associated cost of customer friction.
-
-<img width="671" height="470" alt="image" src="https://github.com/user-attachments/assets/a927f11d-2c8e-4d7f-be18-4f302ed16cbf" />
-
-
-* **The Business Dial:** This threshold acts as a tunable "security dial" for the organization:
-    * **High-Risk Periods:** During events like Black Friday, the threshold can be lowered (e.g., toward $0.4$) to prioritize **Recall**, ensuring wider coverage against aggressive attacks.
-    * **VIP/Low-Friction Segments:** For verified, low-risk user segments, the threshold can be maintained at $0.89+$ to ensure legitimate commerce remains entirely uninterrupted.
-
-<img width="826" height="582" alt="image" src="https://github.com/user-attachments/assets/14dcbd99-1848-46e6-ac9a-bed68a02c991" />
-
+### Local Interpretability: Empowering Investigators
+Because we used SHAP, every alert generated by this system in a production environment (via score.py) can be accompanied by an Explanation Report.
+Actionable Insights: Instead of just a "98% Fraud Risk" score, an analyst sees: "Risk increased due to high Anomaly Score and V14 deviation, partially offset by normal V8 activity."
+Regulatory Compliance: This level of detail satisfies GDPR and banking requirements for model transparency and auditability.
 
 ---
 
-## 🔍 Interpreting the Engine: Feature Importance
+## 🧬 Deep-Dive: SHAP Beeswarm Analysis
+While many models act as a "black box," this Beeswarm plot provides a granular view of how the XGBoost model makes decisions. Each dot represents a single transaction from the test set.
 
-To ensure the model is making decisions based on meaningful signals rather than noise, I performed a **Feature Importance Analysis** on the tuned XGBoost champion. This provides transparency into which transaction attributes are the primary drivers for fraud detection.
+### How to Read This Plot:
+- Color: Red indicates a high feature value; Blue indicates a low feature value.
+- Position (X-axis): Horizontal distance from the center (0) shows the impact on the model output. Points to the right increase the probability of fraud; points to the left decrease it.
 
-### Key Drivers of Fraud Detection
-The analysis reveals a highly concentrated decision-making process, where a few key latent features (derived from PCA) carry the most significant weight in the model's inference drive.
-
-* **The Leading Indicator (V14):** Feature **V14** is the dominant driver of the model, with an importance score exceeding **6,400**. This suggests that V14 represents a critical behavioral signature—likely related to specific transaction patterns or account anomalies—that is highly correlated with fraudulent activity.
-* **Primary Support Features (V4, V12):** Features **V4** and **V12** follow as the next most influential indicators. Their high importance scores indicate they provide essential secondary context that, when combined with V14, allows the model to differentiate between legitimate high-value transactions and actual fraud.
-* **The "Long Tail" of Evidence:** Beyond the top three, features such as **V8, V7, V20, and scaled_amount** contribute smaller but significant marginal gains. The inclusion of `scaled_amount` in the top 10 confirms that the transaction magnitude remains a relevant, though not solitary, factor in identifying suspicious behavior.
-
-<img width="995" height="701" alt="image" src="https://github.com/user-attachments/assets/1a13a9f8-f97d-43c7-a9b6-5d9b3db97819" />
-
-### Engineering Implications
-* **Inference Latency:** Because the model relies heavily on a small subset of features for its primary decision-making, it remains computationally efficient and capable of meeting sub-second latency requirements.
-* **Model Robustness:** By identifying that **V14** is the linchpin of our detection engine, we can monitor this specific feature for "data drift" in production. If the distribution of V14 changes due to new fraud tactics, we will know immediately that the model requires retraining.
+### Key Insights from the Model:
+1. V4 & V11 (Direct Correlation): Look at the red clusters on the right for V4 and V11. This shows that as these feature values increase, the likelihood of the transaction being flagged as fraud increases significantly. These are "Positive Drivers" of fraud risk.
+2. V14, V12, & V10 (Inverse Correlation): Conversely, for V14, V12, and V10, the blue dots are on the right and the red dots are on the left. This means that low values for these features are strong indicators of fraud. When these values drop, the model's risk score spikes.
+3. The Impact of the Anomaly Score: Our engineered anomaly_score shows a distinct pattern. Most transactions are clustered at 0 (Normal), but a long "tail" of points extends to the right. This confirms that when the Isolation Forest identifies a transaction as an outlier (high anomaly score), the XGBoost model heavily weights that information to confirm a fraud alert.
+4. Feature Thickness (Density):
+The "thickness" of the lines (e.g., at the center of V14) shows where the majority of transactions fall. The wide spread of dots for V14 and V4 compared to others confirms they are the most influential variables in the entire model.
 
 ---
 
-### Layer 2 Performance: The Isolation Forest "Safety Net"
+## ⚖️ Threshold Tuning: Strategic Operational Balancing
+In fraud detection, the goal is not to achieve the highest "accuracy," but to find the optimal balance between catching fraud (Recall) and minimizing false alarms (Precision).
 
-To validate the hybrid architecture, I measured the secondary layer's effectiveness in identifying "Silent Frauds"—fraudulent transactions that bypassed the primary XGBoost supervised threshold.
+<img width="861" height="552" alt="image" src="https://github.com/user-attachments/assets/c1159503-a578-463e-a13b-fe986ba48006" />
 
-* **Fraud Recovery Rate:** The Isolation Forest successfully identified **5 additional fraud cases** that were missed by the primary XGBoost layer, achieving a **26.32% recovery rate** of previously uncaught fraud.
-* **Detecting 'Silent Frauds':** As shown in the performance summary, the unsupervised layer identified anomalies with negative anomaly scores (e.g., indices 9179 and 43547) even when the supervised XGB_Prob was as low as **0.10** or **0.18**. 
-* **Complementary Strength:** While the supervised model focuses on known historical patterns, the Isolation Forest focuses on structural rarity. This allows the system to flag suspicious activity that does not yet fit a "known fraud" profile, effectively acting as a defense against zero-day attack vectors.
+As shown in the Threshold Tuning plot, I implemented an Operational Capacity Constraint to determine the final model behavior:
+### 1. The 1% Active Alert Zone
+Most fraud investigation teams have limited headcount. I defined an Active Alert Zone (1% Cap), meaning we only flag the top 1% of the most suspicious transactions for manual review.
+The Threshold: To fit within this 1% capacity, the model probability threshold was set at 0.0333.
 
-| Metric | Result |
-| :--- | :--- |
-| **Total Fraud Missed by Layer 1** | 19 Cases |
-| **Total Fraud Recovered by Layer 2** | 5 Cases |
-| **Layer 2 Recovery Rate** | **26.32%** |
+### 2. Maximizing Capture Rate (Recall)
+At this strategic threshold, the model achieves a Recall of 90.8%.
+Business Impact: This means we catch over 90% of all fraudulent attempts while only requiring the investigation team to look at 1% of total transaction traffic.
 
-
----
-
-## 🏁 Conclusion: Engineering a Resilient Defense
-
-This project successfully transitioned from a raw, imbalanced dataset to a **production-ready, two-layer security architecture**. By rejecting standard oversampling in favor of cost-sensitive learning and a hybrid defense-in-depth strategy, the system achieves an elite balance between high-confidence fraud detection and a frictionless user experience.
-
-### 🚀 Production Readiness & Deployment
-The entire **Hybrid Defense Model** (XGBoost + Isolation Forest) has been formalized and **registered within the Azure Machine Learning Model Registry**. 
-* **Deployment Ready:** The system is containerized and ready for deployment as a real-time managed online endpoint.
-* **Inference Optimized:** The selection of XGBoost and Isolation Forest ensures that the multi-layer check occurs within sub-second latency requirements, making it suitable for high-volume, real-time payment processing.
-* **Versioned & Tracked:** Every iteration of the "Pattern Matcher" and "Safety Net" is version-controlled via MLflow, ensuring full auditability and easy rollbacks in a production environment.
-
----
-
-## 🚀 Strategic Roadmap: From PoC to Production
-This project could serve as a Proof of Concept (PoC). In a real-world banking environment, I would enhance this framework with the following strategic initiatives:
-
-### Phase 1: Advanced Metrics Integration
-- **Value Detection Rate (VDR):** Transition from "Count-based" detection to "Value-based" detection—prioritizing the prevention of high-monetary loss transactions.
-- **Precision@K:** Optimize the model to provide a "Top-K" list for the manual investigation team, ensuring 100% utilization of operational capacity on the highest-risk alerts.
-
-### Phase 2: Model Explainability & Compliance
-- **XAI (SHAP/LIME):** Implement explainability layers to satisfy regulatory requirements (FCA Consumer Duty) by providing clear "Reason Codes" for every blocked transaction.
-- **Fairness Monitoring:** Auditing the model for demographic bias to ensure equitable treatment across the customer base.
-
-### Phase 3: Real-Time Resilience
-- **Drift Detection:** Implement Population Stability Index (PSI) monitoring to detect when fraudster tactics change (Model Drift).
-- **Behavioral Features:** Based on insights from other fraud team mmembers, incorporate behavioral features such as velocity-based features (e.g., "number of transactions in the last hour") to capture modern attack vectors like APP Scams.
+### 3. Managing Hit Rate (Precision)
+At the same point, the Precision is 15.6%.
+Analyst Experience: While this sounds low, in the context of fraud (where the base rate is <0.2%), a 15.6% precision is exceptionally high. It means roughly 1 out of every 6 alerts flagged by the model is a confirmed fraud case, significantly outperforming legacy rules-based systems.
 
 ---
 
