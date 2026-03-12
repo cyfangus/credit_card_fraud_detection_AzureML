@@ -55,11 +55,12 @@ The Feature: I extracted the Anomaly Score from the Isolation Forest and appende
 With the added anomaly context, I trained and cross-validated three distinct types of supervised learners to find the optimal balance between detection (protecting the bank from loss) and customer friction (maintaining good customer expereince).
 
 <img width="1201" height="347" alt="Screenshot 2026-03-12 at 11 48 07" src="https://github.com/user-attachments/assets/11a77637-ed1b-441f-8024-a42c7ae47ff0" />
-🔍 Key Metric Definitions for Stakeholders:
-VDR (Value Detection Rate): Measures the percentage of the total monetary value of fraud caught. This is often more important to a CFO than the number of cases.
-Hit Rate (Prec@1%): The "True Positive" rate when we only look at the highest-risk 1% of transactions. A higher hit rate means less time wasted for fraud analysts.
-Customer Friction (FPR): At 0.84%, this model ensures that less than 1 in 100 legitimate customers are ever inconvenienced by a false fraud alert.
-Value Efficiency: A ratio of dollars saved versus the cost to catch them. Our top model achieved a 1.08 efficiency rating, proving it is a profit-generating asset.
+
+#### 🔍 Key Metric Definitions for Stakeholders:
+- VDR (Value Detection Rate): Measures the percentage of the total monetary value of fraud caught. This is often more important to a CFO than the number of cases.
+- Hit Rate (Prec@1%): The "True Positive" rate when we only look at the highest-risk 1% of transactions. A higher hit rate means less time wasted for fraud analysts.
+- Customer Friction (FPR): At 0.84%, this model ensures that less than 1 in 100 legitimate customers are ever inconvenienced by a false fraud alert.
+- Value Efficiency: A ratio of dollars saved versus the cost to catch them. Our top model achieved a 1.08 efficiency rating, proving it is a profit-generating asset.
 
 To determine the most effective model for production, I conducted a benchmarking exercise across three distinct model architectures (XGBoost, Random Forest, and Logistic Regression) and three optimization strategies (Frequency, Raw Value, and Balanced).
 The models were evaluated not just on accuracy, but on Financial Impact and Operational Cost. The **XGBoost model optimized for transaction frequency** emerged as the clear winner for a high-volume banking environment.
