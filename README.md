@@ -157,8 +157,6 @@ To replicate this environment and run the model tournament:
 ## 📂 Repository Structure
 * `/data`: Dataset documentation and schema definitions.
 * `/notebooks`: Exploratory Data Analysis (EDA) and SHAP interpretability visualizations.
-* `/src`: Production-ready Python scripts for training (XGBoost/SMOTE).
-* `/deployment`: Azure ML configuration files for REST-based real-time scoring.
 
 ---
 
