@@ -2,3 +2,7 @@ data/
 .azureml/
 azureml-logs/
 .ipynb_checkpoints/
+.ipynb_aml_checkpoints/
+*.amltmp
+*.amltemp
+*.save
