@@ -26,7 +26,7 @@ In a financial service and retail banking environment, the goal of fraud detecti
 - **Operational Efficiency:** Prioritize the most suspicious cases for manual review.
 - **Scalability:** Leverage Azure ML for a cloud-native, production-ready pipeline.
 
-This project delivers a **effective detection system** that saved **98% of the value** from fraud transaction while maintaining a **15% precision@k** for operationl efficiency at 1% alert rate. 
+This project delivers an **effective detection system** that saved **98% of the value** from fraud transaction while maintaining a **15% precision@k** for operational efficiency at 1% alert rate. 
 
 ---
 
@@ -52,7 +52,7 @@ The Logic: Fraudulent transactions often occupy a sparse region of the feature s
 The Feature: I extracted the Anomaly Score from the Isolation Forest and appended it as a new, high-value feature to the training set. This provided the supervised models with a "pre-calculated" hint regarding how unusual a transaction is relative to the entire dataset.
 
 ### Stage 2: Supervised Benchmarking & Comparison
-With the added anomaly context, I trained and cross-validated three distinct types of supervised learners to find the optimal balance between detection (protecting the bank from loss) and customer friction (maintaining good customer expereince).
+With the added anomaly context, I trained and cross-validated three distinct types of supervised learners to find the optimal balance between detection (protecting the bank from loss) and customer friction (maintaining good customer experience).
 
 <img width="1201" height="347" alt="Screenshot 2026-03-12 at 11 48 07" src="https://github.com/user-attachments/assets/11a77637-ed1b-441f-8024-a42c7ae47ff0" />
 
