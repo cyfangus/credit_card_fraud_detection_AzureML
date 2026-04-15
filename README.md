@@ -161,5 +161,5 @@ To replicate this environment and run the model tournament:
 ---
 
 ## 🤝 Contact and Portfolio
-**Angus Chan** PhD Researcher | Security and Crime Science | UCL  
-[LinkedIn Profile] | [Technical Portfolio]
+**Angus Chan** Fraud Data Analytics | PhD in Security and Crime Science 
+[LinkedIn Profile](https://www.linkedin.com/in/cyfangus/)
