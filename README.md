@@ -14,7 +14,7 @@
 ---
 
 ## 📌 Executive Summary
-Fraud detection is a "needle in a haystack" problem. In this project, I developed a high-precision fraud detection engine that identifies 90.8% of fraudulent transactions while only flagging 1% of total transaction volume. By moving from a local notebook to a Managed Azure ML Pipeline, I demonstrated how to build a production-ready system that balances predictive power with financial regulatory transparency (SHAP).
+Fraud detection is a "needle in a haystack" problem. In this project, I developed a high-precision fraud detection engine that identifies 90.8% of fraudulent transactions while only flagging 1% of total transaction volume, achieving an AUPRC of 0.861 — exceptionally strong for a 0.17% base rate dataset. By moving from a local notebook to a Managed Azure ML Pipeline, I demonstrated how to build a production-ready system that balances predictive power with financial regulatory transparency (SHAP).
 
 ---
 
@@ -55,6 +55,8 @@ The Feature: I extracted the Anomaly Score from the Isolation Forest and appende
 With the added anomaly context, I trained and cross-validated three distinct types of supervised learners to find the optimal balance between detection (protecting the bank from loss) and customer friction (maintaining good customer experience).
 
 <img width="1201" height="347" alt="Screenshot 2026-03-12 at 11 48 07" src="https://github.com/user-attachments/assets/11a77637-ed1b-441f-8024-a42c7ae47ff0" />
+
+The winning model (XGBoost-Frequency-Optimised) achieves an AUPRC of 0.861, Recall@1% of 90.8%, and a Value Detection Rate of 98.18%, recovering $5,651 in net financial impact during evaluation.
 
 #### 🔍 Key Metric Definitions for Stakeholders:
 - VDR (Value Detection Rate): Measures the percentage of the total monetary value of fraud caught. This is often more important to a CFO than the number of cases.
@@ -161,5 +163,5 @@ To replicate this environment and run the model tournament:
 ---
 
 ## 🤝 Contact and Portfolio
-**Angus Chan** Fraud Data Analytics | PhD in Security and Crime Science 
-[LinkedIn Profile](https://www.linkedin.com/in/cyfangus/)
+**Angus Chan** Fraud Data Analytics | PhD in Security and Crime Science
+* [LinkedIn Profile](https://www.linkedin.com/in/cyfangus/)
