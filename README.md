@@ -120,7 +120,7 @@ Business Impact: This means we catch over 90% of all fraudulent attempts while o
 
 ### 3. Managing Hit Rate (Precision)
 At the same point, the Precision is 15.6%.
-Analyst Experience: While this sounds low, in the context of fraud (where the base rate is <0.2%), a 15.6% precision is exceptionally high. It means roughly 1 out of every 6 alerts flagged by the model is a confirmed fraud case, significantly outperforming legacy rules-based systems.
+Analyst Experience: While this sounds low, in the context of fraud (where the base rate is <0.2%), a 15.6% precision is a ~92x lift over the 0.17% base rate. It means roughly 1 out of every 6 alerts flagged by the model is a confirmed fraud case, significantly outperforming legacy rules-based systems.
 
 ---
 
