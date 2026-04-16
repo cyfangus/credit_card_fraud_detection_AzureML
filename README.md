@@ -130,7 +130,7 @@ This project demonstrates a transition from a standard classification task to a 
 ### 🌟 Key Takeaways for the Business:
 - Strategic ROI: The project proved that an XGBoost-Frequency-Optimized strategy generates the highest net financial impact, saving over $10,400 in potential fraud during the evaluation period.
 - Trust & Transparency: Through SHAP explainability, the model moves beyond "black-box" predictions, providing investigators with the "why" behind every alert—a critical requirement for regulatory compliance and auditability.
-- Production Readiness: By leveraging Azure ML Managed Endpoints, the system is architected for real-time inference, ensuring the model can scale from a development notebook to a live banking environment with minimal latency.
+- Cloud Deployment: The champion model is registered to an Azure ML Managed Endpoint, demonstrating a path from development notebook to a scalable, low-latency banking environment.
 
 ### 🔮 Future Roadmap & Scalability:
 To further evolve this system, the following enhancements are architected:
@@ -140,25 +140,53 @@ To further evolve this system, the following enhancements are architected:
 
 ---
 
-## 🛠️ Installation & Usage
+## 🛠️ Quick Start (local, no cloud required)
 
-To replicate this environment and run the model tournament:
+**Dataset:** Download `creditcard.csv` from [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) and place it in the project root.
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/cyfangus/credit_card_fraud_detection_AzureML.git](https://github.com/cyfangus/credit_card_fraud_detection_AzureML.git)
-   cd credit_card_fraud_detection_AzureML
-   ```
+```bash
+git clone https://github.com/cyfangus/credit_card_fraud_detection_AzureML.git
+cd credit_card_fraud_detection_AzureML
 
-1. Clone the repository.
-2. Ensure your Azure ML `config.json` is present in the root directory.
-3. Execute `03_training_&_deployment.ipynb` to reproduce the tournament and tuning results.
+pip install -r requirements.txt
+
+# Step 1 — feature engineering & train/test split
+python src/preprocess.py --input creditcard.csv --output-dir data/
+
+# Step 2 — run the full pipeline (IF anomaly scores → model tournament → champion SHAP)
+python src/train.py --data-dir data/ --output-dir models/ --report-dir reports/
+```
+
+After `train.py` completes you will find:
+- `models/champion_xgb.json` — serialised XGBoost champion model
+- `models/business_config.json` — operating threshold and headline metrics
+- `reports/shap_bar_importance.png` — global SHAP feature importance
+- `reports/threshold_tuning.png` — Precision/Recall vs threshold curve
+- `reports/leaderboard.csv` — full 9-run model tournament results
+
+### Azure ML (cloud reproduction)
+To reproduce the original Azure ML experiment:
+1. Place your workspace `config.json` in the project root.
+2. Register the dataset as a data asset named `credit_card_fraud_dataset` (v1).
+3. Run the notebooks in order: `01_set_up_workspace` → `02_eda_and_preprocessing` → `03_training_&_deployment`.
 
 ---
 
 ## 📂 Repository Structure
-* `/data`: Dataset documentation and schema definitions.
-* `/notebooks`: Exploratory Data Analysis (EDA) and SHAP interpretability visualizations.
+
+```
+├── src/
+│   ├── preprocess.py     # Feature engineering + stratified split
+│   └── train.py          # Two-stage pipeline: IF → tournament → champion + SHAP
+├── notebooks/
+│   ├── 01_set_up_workspace.ipynb
+│   ├── 02_eda_and_preprocessing.ipynb
+│   └── 03_training_&_deployment.ipynb
+├── models/               # Serialised model artefacts (git-ignored)
+├── reports/              # Generated plots and leaderboard (git-ignored)
+├── examples/             # Sample inference request payloads
+└── requirements.txt      # Minimal local dependencies
+```
 
 ---
 

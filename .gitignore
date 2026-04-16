@@ -1,4 +1,6 @@
 data/
+models/
+reports/
 .azureml/
 azureml-logs/
 .ipynb_checkpoints/
@@ -6,3 +8,4 @@ azureml-logs/
 *.amltmp
 *.amltemp
 *.save
+.DS_Store
