@@ -105,22 +105,27 @@ The "thickness" of the lines (e.g., at the center of V14) shows where the majori
 ---
 
 ## ⚖️ Threshold Tuning: Strategic Operational Balancing
-In fraud detection, the goal is not to achieve the highest "accuracy," but to find the optimal balance between catching fraud (Recall) and minimizing false alarms (Precision).
+In fraud detection, the goal is not to achieve the highest "accuracy," but to find the optimal balance between catching fraud (Recall) and minimizing false alarms (Precision). The chart below reads left to right — as the alert rate increases, more transactions are flagged and the trade-off between precision and recall becomes visible.
 
-<img width="861" height="552" alt="image" src="https://github.com/user-attachments/assets/c1159503-a578-463e-a13b-fe986ba48006" />
+> **Note:** The plot image below will be updated once the script is re-run with the latest visualization. To regenerate locally: `python generate_threshold_plot.py --data creditcard.csv --two-panel`
 
-As shown in the Threshold Tuning plot, I implemented an Operational Capacity Constraint to determine the final model behavior:
-### 1. The 1% Active Alert Zone
-Most fraud investigation teams have limited headcount. I defined an Active Alert Zone (1% Cap), meaning we only flag the top 1% of the most suspicious transactions for manual review.
-The Threshold: To fit within this 1% capacity, the model probability threshold was set at 0.0333.
+### 1. The 1% Operational Cap (Business Constraint)
+Most fraud investigation teams operate under strict headcount constraints. I defined a **1% alert rate cap**, meaning the model only flags the top 1% of the most suspicious transactions for manual review.
 
-### 2. Maximizing Capture Rate (Recall)
-At this strategic threshold, the model achieves a Recall of 90.8%.
-Business Impact: This means we catch over 90% of all fraudulent attempts while only requiring the investigation team to look at 1% of total transaction traffic.
+At this threshold (probability ≥ 0.0333):
+- **Recall: 90.8%** — over 9 in 10 fraudulent transactions are caught
+- **Precision: 15.6%** — roughly 1 in 6 alerts is a confirmed fraud case
 
-### 3. Managing Hit Rate (Precision)
-At the same point, the Precision is 15.6%.
-Analyst Experience: While this sounds low, in the context of fraud (where the base rate is <0.2%), a 15.6% precision is a ~92x lift over the 0.17% base rate. It means roughly 1 out of every 6 alerts flagged by the model is a confirmed fraud case, significantly outperforming legacy rules-based systems.
+While 15.6% precision sounds low in isolation, it represents a **~92× lift** over the 0.17% base rate — far outperforming legacy rules-based systems. In practice, fraud teams often operate well **below** the 1% cap depending on the touchpoint in the customer journey.
+
+### 2. F1-Max: The Model's Natural Sweet Spot
+Looking deeper at the precision-recall curve reveals a more nuanced picture. The two curves intersect at approximately **~0.5% alert rate** — the point where Precision = Recall and the **F1 score is maximised**. This is where the model achieves its most balanced performance with no business constraint applied.
+
+This creates two distinct operating zones:
+- **Model Sweet Spot (0 → ~0.5%):** The model is highly selective — nearly every alert is a confirmed fraud. Precision and recall are balanced at ~90%+. Best suited to high-friction touchpoints (e.g., large wire transfers).
+- **Operational Buffer (~0.5% → 1%):** Slightly broader coverage at the cost of more false positives. Still ~92× better than chance. Suitable for lower-friction touchpoints (e.g., card-present transactions) where investigators can handle a higher volume.
+
+The 1% cap is therefore not just an arbitrary ceiling — it defines how much of the operational buffer the team can afford to use. In production, the threshold would be adjusted dynamically based on investigator capacity at each touchpoint.
 
 ---
 
@@ -155,14 +160,21 @@ python src/preprocess.py --input creditcard.csv --output-dir data/
 
 # Step 2 — run the full pipeline (IF anomaly scores → model tournament → champion SHAP)
 python src/train.py --data-dir data/ --output-dir models/ --report-dir reports/
+
+# Step 3 — regenerate the threshold tuning plot (single or two-panel)
+python generate_threshold_plot.py --data creditcard.csv
+python generate_threshold_plot.py --data creditcard.csv --two-panel
 ```
 
 After `train.py` completes you will find:
 - `models/champion_xgb.json` — serialised XGBoost champion model
 - `models/business_config.json` — operating threshold and headline metrics
 - `reports/shap_bar_importance.png` — global SHAP feature importance
-- `reports/threshold_tuning.png` — Precision/Recall vs threshold curve
 - `reports/leaderboard.csv` — full 9-run model tournament results
+
+After `generate_threshold_plot.py` completes:
+- `threshold_tuning_plot.png` — zoomed precision/recall vs alert rate (0–3%)
+- `threshold_tuning_plot_twopanel.png` — full range + zoomed side-by-side (with `--two-panel`)
 
 ### Azure ML (cloud reproduction)
 To reproduce the original Azure ML experiment:
@@ -176,16 +188,17 @@ To reproduce the original Azure ML experiment:
 
 ```
 ├── src/
-│   ├── preprocess.py     # Feature engineering + stratified split
-│   └── train.py          # Two-stage pipeline: IF → tournament → champion + SHAP
+│   ├── preprocess.py              # Feature engineering + stratified split
+│   └── train.py                   # Two-stage pipeline: IF → tournament → champion + SHAP
 ├── notebooks/
 │   ├── 01_set_up_workspace.ipynb
 │   ├── 02_eda_and_preprocessing.ipynb
 │   └── 03_training_&_deployment.ipynb
-├── models/               # Serialised model artefacts (git-ignored)
-├── reports/              # Generated plots and leaderboard (git-ignored)
-├── examples/             # Sample inference request payloads
-└── requirements.txt      # Minimal local dependencies
+├── generate_threshold_plot.py     # Standalone plot script (no Azure/MLflow required)
+├── models/                        # Serialised model artefacts (git-ignored)
+├── reports/                       # Generated plots and leaderboard (git-ignored)
+├── examples/                      # Sample inference request payloads
+└── requirements.txt               # Minimal local dependencies
 ```
 
 ---
