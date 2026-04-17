@@ -6,15 +6,18 @@ No Azure, no MLflow, no SHAP required.
 
 Usage:
     python generate_threshold_plot.py --data path/to/creditcard.csv
+    python generate_threshold_plot.py --data path/to/creditcard.csv --two-panel
 
 Output:
-    threshold_tuning_plot.png  (saved next to this script)
+    threshold_tuning_plot.png         — zoomed operating region (0–10%)
+    threshold_tuning_plot_twopanel.png — full range + zoom side-by-side (--two-panel)
 """
 
 import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import matplotlib
 matplotlib.use('Agg')
 
@@ -29,6 +32,8 @@ import xgboost as xgb
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", required=True, help="Path to creditcard.csv")
+parser.add_argument("--two-panel", action="store_true",
+                    help="Also save a full-range + zoomed two-panel figure")
 args = parser.parse_args()
 
 
@@ -147,4 +152,82 @@ plt.annotate(f'Precision: {prec:.1%}',
 out = "threshold_tuning_plot.png"
 plt.tight_layout()
 plt.savefig(out, dpi=150, bbox_inches='tight')
-print(f"\nSaved → {out}")
+plt.close()
+print(f"Saved → {out}")
+
+
+# ── 7. Two-panel figure (optional) ──────────────────────────────────────────
+
+if args.two_panel:
+    print("Generating two-panel figure...")
+
+    fig, (ax_full, ax_zoom) = plt.subplots(1, 2, figsize=(14, 6),
+                                            gridspec_kw={'wspace': 0.35})
+
+    # ── Left: full 0–100% ───────────────────────────────────────────────────
+    ax_full.plot(alert_rates_plot, precisions_plot, "b-", linewidth=2,
+                 label="Precision (Hit Rate)")
+    ax_full.plot(alert_rates_plot, recalls_plot, "g-", linewidth=2,
+                 label="Recall (Capture Rate)")
+    ax_full.axvline(business_alert_rate, color="red", linestyle="--", alpha=0.7,
+                    label=f"Operating Point ({business_alert_rate:.1%} cap)")
+
+    # Highlight the zoomed region with an orange box
+    zoom_x = 0.10
+    rect = mpatches.FancyBboxPatch(
+        (0, 0), zoom_x, 1.05,
+        boxstyle="square,pad=0", linewidth=2,
+        edgecolor="orange", facecolor="orange", alpha=0.12, zorder=3
+    )
+    ax_full.add_patch(rect)
+    ax_full.text(zoom_x / 2, 0.35, "Zoomed\nregion →",
+                 ha='center', fontsize=9, color='darkorange', fontweight='bold')
+
+    ax_full.set_xlim([0, 1])
+    ax_full.set_ylim([0, 1.05])
+    ax_full.set_xlabel("Alert Rate (% of transactions flagged)", fontsize=11)
+    ax_full.set_ylabel("Score (0.0 – 1.0)", fontsize=11)
+    ax_full.set_title("Full Range (0–100%)", fontsize=13)
+    ax_full.legend(loc="center right", fontsize=9, frameon=True)
+    ax_full.grid(True, linestyle=':', alpha=0.6)
+    ax_full.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
+
+    # ── Right: zoomed 0–10% ─────────────────────────────────────────────────
+    ax_zoom.plot(alert_rates_plot, precisions_plot, "b-", linewidth=2,
+                 label="Precision (Hit Rate)")
+    ax_zoom.plot(alert_rates_plot, recalls_plot, "g-", linewidth=2,
+                 label="Recall (Capture Rate)")
+    ax_zoom.axvline(business_alert_rate, color="red", linestyle="--", alpha=0.7,
+                    label=f"Operating Point ({business_alert_rate:.1%} alert rate)")
+    ax_zoom.axvspan(0, business_alert_rate, color='red', alpha=0.10,
+                    label='Active Alert Zone (≤1% cap)')
+
+    ax_zoom.annotate(f'Recall: {rec:.1%}',
+                     xy=(business_alert_rate, op_rec),
+                     xytext=(business_alert_rate + 0.012, op_rec + 0.04),
+                     fontsize=10,
+                     arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=5))
+    ax_zoom.annotate(f'Precision: {prec:.1%}',
+                     xy=(business_alert_rate, op_prec),
+                     xytext=(business_alert_rate + 0.012, op_prec - 0.10),
+                     fontsize=10,
+                     arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=5))
+
+    ax_zoom.set_xlim([0, 0.10])
+    ax_zoom.set_ylim([0, 1.05])
+    ax_zoom.set_xlabel("Alert Rate (% of transactions flagged)", fontsize=11)
+    ax_zoom.set_title("Operating Region (0–10%)", fontsize=13)
+    ax_zoom.legend(loc="upper right", fontsize=9, frameon=True)
+    ax_zoom.grid(True, linestyle=':', alpha=0.6)
+    ax_zoom.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
+
+    fig.text(0.5, -0.03,
+             "In practice, the alert rate often falls below 1% depending on the touchpoint in the user journey.",
+             ha='center', fontsize=9, style='italic', color='dimgray')
+    fig.suptitle("Threshold Tuning: Balancing Fraud Capture vs. Operational Capacity",
+                 fontsize=14, fontweight='bold', y=1.02)
+
+    out2 = "threshold_tuning_plot_twopanel.png"
+    fig.savefig(out2, dpi=150, bbox_inches='tight')
+    plt.close()
+    print(f"Saved → {out2}")
