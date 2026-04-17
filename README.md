@@ -1,4 +1,3 @@
-<img width="1995" height="979" alt="threshold_tuning_plot_twopanel" src="https://github.com/user-attachments/assets/49353fcc-791e-457d-9b1d-80bad2aec41d" />
 # 💳 Credit Card Fraud Detection: End-to-End Azure MLOps & Explainable AI
 **An MLOps Case Study in Extreme Class Imbalance (0.17%)**
 
