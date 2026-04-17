@@ -1,3 +1,4 @@
+<img width="1995" height="979" alt="threshold_tuning_plot_twopanel" src="https://github.com/user-attachments/assets/49353fcc-791e-457d-9b1d-80bad2aec41d" />
 # 💳 Credit Card Fraud Detection: End-to-End Azure MLOps & Explainable AI
 **An MLOps Case Study in Extreme Class Imbalance (0.17%)**
 
@@ -107,7 +108,7 @@ The "thickness" of the lines (e.g., at the center of V14) shows where the majori
 ## ⚖️ Threshold Tuning: Strategic Operational Balancing
 In fraud detection, the goal is not to achieve the highest "accuracy," but to find the optimal balance between catching fraud (Recall) and minimizing false alarms (Precision). The chart below reads left to right — as the alert rate increases, more transactions are flagged and the trade-off between precision and recall becomes visible.
 
-> **Note:** The plot image below will be updated once the script is re-run with the latest visualization. To regenerate locally: `python generate_threshold_plot.py --data creditcard.csv --two-panel`
+<img width="1995" height="979" alt="threshold_tuning_plot_twopanel" src="https://github.com/user-attachments/assets/8822c802-eb46-4205-b266-c5de137228ea" />
 
 ### 1. The 1% Operational Cap (Business Constraint)
 Most fraud investigation teams operate under strict headcount constraints. I defined a **1% alert rate cap**, meaning the model only flags the top 1% of the most suspicious transactions for manual review.
