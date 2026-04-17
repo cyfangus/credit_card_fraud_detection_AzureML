@@ -38,7 +38,7 @@ Standard machine learning models often fail in fraud contexts because they optim
 * **Objective:** Developing a robust detection mechanism that identifies high-risk signatures without disrupting the frictionless payment experience of customers.
 
 
-<img width="867" height="570" alt="image" src="https://github.com/user-attachments/assets/1923e780-edc8-4ee2-a3e4-7066314a0388" />
+<img src="assets/01_class_distribution.png" alt="Class Distribution" />
 
 ---
 
@@ -72,7 +72,7 @@ The models were evaluated not just on accuracy, but on Financial Impact and Oper
 ## 🔍 Explainable AI (XAI): Deciphering the "Black Box"
 To ensure the model's predictions are actionable for fraud analysts, I implemented SHAP based on cooperative game theory. This allows us to see exactly which features are driving the risk scores.
 
-<img width="875" height="568" alt="image" src="https://github.com/user-attachments/assets/283293d2-81c4-47f8-aa17-c9dc342ae365" />
+<img src="assets/02_shap_bar.png" alt="SHAP Feature Importance" />
 
 
 ### Global Interpretability: What Drives Fraud?
@@ -91,6 +91,8 @@ Regulatory Compliance: This level of detail satisfies GDPR and banking requireme
 ## 🧬 Deep-Dive: SHAP Beeswarm Analysis
 While many models act as a "black box," this Beeswarm plot provides a granular view of how the XGBoost model makes decisions. Each dot represents a single transaction from the test set.
 
+<img src="assets/03_shap_beeswarm.png" alt="SHAP Beeswarm" />
+
 ### How to Read This Plot:
 - Color: Red indicates a high feature value; Blue indicates a low feature value.
 - Position (X-axis): Horizontal distance from the center (0) shows the impact on the model output. Points to the right increase the probability of fraud; points to the left decrease it.
@@ -107,7 +109,7 @@ The "thickness" of the lines (e.g., at the center of V14) shows where the majori
 ## ⚖️ Threshold Tuning: Strategic Operational Balancing
 In fraud detection, the goal is not to achieve the highest "accuracy," but to find the optimal balance between catching fraud (Recall) and minimizing false alarms (Precision). The chart below reads left to right — as the alert rate increases, more transactions are flagged and the trade-off between precision and recall becomes visible.
 
-<img width="1995" height="979" alt="threshold_tuning_plot_twopanel" src="https://github.com/user-attachments/assets/8822c802-eb46-4205-b266-c5de137228ea" />
+<img src="assets/05_threshold_tuning_twopanel.png" alt="Threshold Tuning" />
 
 ### 1. The 1% Operational Cap (Business Constraint)
 Most fraud investigation teams operate under strict headcount constraints. I defined a **1% alert rate cap**, meaning the model only flags the top 1% of the most suspicious transactions for manual review.
@@ -161,20 +163,21 @@ python src/preprocess.py --input creditcard.csv --output-dir data/
 # Step 2 — run the full pipeline (IF anomaly scores → model tournament → champion SHAP)
 python src/train.py --data-dir data/ --output-dir models/ --report-dir reports/
 
-# Step 3 — regenerate the threshold tuning plot (single or two-panel)
-python generate_threshold_plot.py --data creditcard.csv
-python generate_threshold_plot.py --data creditcard.csv --two-panel
+# Step 3 — regenerate all README graphics
+python generate_plots.py --data creditcard.csv
 ```
 
-After `train.py` completes you will find:
+After `train.py` completes:
 - `models/champion_xgb.json` — serialised XGBoost champion model
 - `models/business_config.json` — operating threshold and headline metrics
-- `reports/shap_bar_importance.png` — global SHAP feature importance
 - `reports/leaderboard.csv` — full 9-run model tournament results
 
-After `generate_threshold_plot.py` completes:
-- `threshold_tuning_plot.png` — zoomed precision/recall vs alert rate (0–3%)
-- `threshold_tuning_plot_twopanel.png` — full range + zoomed side-by-side (with `--two-panel`)
+After `generate_plots.py` completes, all images are saved to `assets/`:
+- `01_class_distribution.png` — EDA fraud vs non-fraud
+- `02_shap_bar.png` — global SHAP feature importance
+- `03_shap_beeswarm.png` — per-transaction SHAP impact
+- `04_threshold_tuning.png` — precision/recall vs alert rate (0–3%)
+- `05_threshold_tuning_twopanel.png` — full range + zoomed side-by-side
 
 ### Azure ML (cloud reproduction)
 To reproduce the original Azure ML experiment:
@@ -194,7 +197,8 @@ To reproduce the original Azure ML experiment:
 │   ├── 01_set_up_workspace.ipynb
 │   ├── 02_eda_and_preprocessing.ipynb
 │   └── 03_training_&_deployment.ipynb
-├── generate_threshold_plot.py     # Standalone plot script (no Azure/MLflow required)
+├── generate_plots.py              # Generates all README graphics from raw CSV
+├── assets/                        # Generated images referenced by README
 ├── models/                        # Serialised model artefacts (git-ignored)
 ├── reports/                       # Generated plots and leaderboard (git-ignored)
 ├── examples/                      # Sample inference request payloads
