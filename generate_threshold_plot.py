@@ -136,11 +136,26 @@ print(f"Recall     : {f1_rec:.2%}")
 print(f"F1 Score   : {f1_score_val:.2%}")
 
 
-# ── 7. Shared panel drawing function ─────────────────────────────────────────
+# ── 7. Panel drawing functions ───────────────────────────────────────────────
 
-def draw_panel(ax, xlim, fontsize=10):
-    """Draw the precision/recall curves + both key markers onto ax."""
+def draw_full_panel(ax):
+    """Left panel: curves only — clean overview, no markers."""
+    ax.plot(alert_rates_plot, precisions_plot, color='steelblue',
+            linewidth=2, label="Precision (Hit Rate)")
+    ax.plot(alert_rates_plot, recalls_plot, color='seagreen',
+            linewidth=2, label="Recall (Capture Rate)")
 
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 1.05])
+    ax.set_xlabel("Alert Rate (% of transactions flagged)", fontsize=11)
+    ax.set_ylabel("Score (0.0 – 1.0)", fontsize=11)
+    ax.grid(True, linestyle=':', alpha=0.6)
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
+    ax.legend(loc='upper right', fontsize=9, frameon=True)
+
+
+def draw_zoom_panel(ax, xlim=0.03, fontsize=10):
+    """Right panel: zoomed view with F1-max and operational cap markers."""
     ax.plot(alert_rates_plot, precisions_plot, color='steelblue',
             linewidth=2, label="Precision (Hit Rate)")
     ax.plot(alert_rates_plot, recalls_plot, color='seagreen',
@@ -154,39 +169,35 @@ def draw_panel(ax, xlim, fontsize=10):
     ax.axvspan(f1_alert_rate, business_alert_rate, color='salmon', alpha=0.12,
                label=f'Operational Buffer ({f1_alert_rate:.1%}–{business_alert_rate:.1%})')
 
-    # F1-max vertical line
+    # Vertical lines
     ax.axvline(f1_alert_rate, color='mediumpurple', linestyle='--', linewidth=1.5,
-               label=f'F1 Max — balanced threshold ({f1_alert_rate:.1%})')
-
-    # 1% operational cap vertical line
+               label=f'F1 Max ({f1_alert_rate:.1%})')
     ax.axvline(business_alert_rate, color='crimson', linestyle='--', linewidth=1.5,
-               label=f'Operational Cap — 1% alert rate')
+               label='Operational Cap (1%)')
 
-    # Dot markers on the curves at both key points
-    ax.plot(f1_alert_rate, f1_prec, 'o', color='mediumpurple', markersize=7, zorder=5)
-    ax.plot(f1_alert_rate, f1_rec,  'o', color='mediumpurple', markersize=7, zorder=5)
-    ax.plot(business_alert_rate, op_prec, 'o', color='crimson', markersize=7, zorder=5)
-    ax.plot(business_alert_rate, op_rec,  'o', color='crimson', markersize=7, zorder=5)
+    # Dot markers
+    ax.plot(f1_alert_rate,       f1_prec, 'o', color='mediumpurple', markersize=7, zorder=5)
+    ax.plot(f1_alert_rate,       f1_rec,  'o', color='mediumpurple', markersize=7, zorder=5)
+    ax.plot(business_alert_rate, op_prec, 'o', color='crimson',      markersize=7, zorder=5)
+    ax.plot(business_alert_rate, op_rec,  'o', color='crimson',      markersize=7, zorder=5)
 
-    # Annotations — F1-max point
+    # Annotation — F1-max
     ax.annotate(
         f'F1 Max\nP={f1_prec:.0%}  R={f1_rec:.0%}\nF1={f1_score_val:.0%}',
         xy=(f1_alert_rate, (f1_prec + f1_rec) / 2),
-        xytext=(f1_alert_rate + xlim * 0.08, 0.55),
-        fontsize=fontsize - 1,
-        color='mediumpurple',
+        xytext=(f1_alert_rate + xlim * 0.18, 0.55),
+        fontsize=fontsize - 1, color='mediumpurple',
         arrowprops=dict(arrowstyle='->', color='mediumpurple', lw=1.2),
         bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                   edgecolor='mediumpurple', alpha=0.85)
     )
 
-    # Annotations — 1% cap
+    # Annotation — 1% cap
     ax.annotate(
         f'Operational Cap\nP={prec:.0%}  R={rec:.0%}',
         xy=(business_alert_rate, (op_prec + op_rec) / 2),
-        xytext=(business_alert_rate + xlim * 0.08, 0.30),
-        fontsize=fontsize - 1,
-        color='crimson',
+        xytext=(business_alert_rate + xlim * 0.18, 0.30),
+        fontsize=fontsize - 1, color='crimson',
         arrowprops=dict(arrowstyle='->', color='crimson', lw=1.2),
         bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
                   edgecolor='crimson', alpha=0.85)
@@ -197,15 +208,15 @@ def draw_panel(ax, xlim, fontsize=10):
     ax.set_xlabel("Alert Rate (% of transactions flagged)", fontsize=fontsize + 1)
     ax.set_ylabel("Score (0.0 – 1.0)", fontsize=fontsize + 1)
     ax.grid(True, linestyle=':', alpha=0.6)
-    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.1%}'))
     ax.legend(loc='upper right', fontsize=fontsize - 2, frameon=True)
 
 
-# ── 8. Single plot (zoomed 0–10%) ────────────────────────────────────────────
+# ── 8. Single plot (zoomed 0–3%) ─────────────────────────────────────────────
 
 print("\nGenerating single plot...")
 fig, ax = plt.subplots(figsize=(10, 6))
-draw_panel(ax, xlim=0.10)
+draw_zoom_panel(ax, xlim=0.03)
 ax.set_title("Threshold Tuning: Balancing Fraud Capture vs. Operational Capacity",
              fontsize=13, fontweight='bold')
 fig.text(0.5, -0.02,
@@ -227,23 +238,23 @@ if args.two_panel:
     fig, (ax_full, ax_zoom) = plt.subplots(1, 2, figsize=(16, 6),
                                             gridspec_kw={'wspace': 0.40})
 
-    # Left: full 0–100%
-    draw_panel(ax_full, xlim=1.0, fontsize=9)
+    # Left: clean full range — curves only + zoom box
+    draw_full_panel(ax_full)
     ax_full.set_title("Full Range (0–100%)", fontsize=12)
 
-    # Orange box on left panel marking the zoomed region
+    # Orange outline box marking the zoomed region (0–3%)
     rect = mpatches.FancyBboxPatch(
-        (0, 0), 0.10, 1.05,
+        (0, 0), 0.03, 1.05,
         boxstyle="square,pad=0", linewidth=2,
-        edgecolor="darkorange", facecolor="none", zorder=4
+        edgecolor="darkorange", facecolor="darkorange", alpha=0.12, zorder=4
     )
     ax_full.add_patch(rect)
-    ax_full.text(0.05, 0.12, "Zoomed →", ha='center', fontsize=8,
+    ax_full.text(0.015, 0.12, "Zoomed →", ha='center', fontsize=8,
                  color='darkorange', fontweight='bold')
 
-    # Right: zoomed 0–10%
-    draw_panel(ax_zoom, xlim=0.10, fontsize=10)
-    ax_zoom.set_title("Operating Region (0–10%)", fontsize=12)
+    # Right: zoomed 0–3%
+    draw_zoom_panel(ax_zoom, xlim=0.03, fontsize=10)
+    ax_zoom.set_title("Operating Region (0–3%)", fontsize=12)
     ax_zoom.set_ylabel("")   # remove duplicate y-label on right panel
 
     fig.suptitle("Threshold Tuning: Balancing Fraud Capture vs. Operational Capacity",
